@@ -7,6 +7,7 @@
 #include "configfile.h"
 #include "stlc_list.h"
 
+
 void print_error(char *err_msg)
 {
 	printf("%s\n", err_msg);
