@@ -4,8 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include "configfile.h"
-#include "stlc_list.h"
+#include "config.h"
+#include "list.h"
 
 
 void print_error(char *err_msg)
@@ -87,7 +87,7 @@ int read_file_content(const char *file, sections_t *section_head)
 				}
 				memset(section_node, 0, sizeof(sections_t));
 				memcpy(section_node->section, pcon + 1, ret_buf - pcon - 1);
-				stlc_list_add_tail(&section_node->node, &section_head->node);
+				list_add_tail(&section_node->node, &section_head->node);
 			}else {
 				print_error("syntex error , there are need ']'");
 			}
@@ -109,7 +109,7 @@ int read_file_content(const char *file, sections_t *section_head)
 					exit(0);
 				}
 				memset(section_node->keys, 0, sizeof(keys_t));
-				STLC_INIT_LIST_HEAD(&section_node->keys->node);
+			    INIT_LIST_HEAD(&section_node->keys->node);
 			}
 			if ((keys = (keys_t *)malloc(sizeof(keys_t)))
 						== NULL) {
@@ -121,8 +121,7 @@ int read_file_content(const char *file, sections_t *section_head)
 			while (ret_buf = strtok_r(pcon, SIGN_OF_EQUAL, &saveptr)) {
 				if (i == 0) {
 					delete_line_break_indicator(ret_buf);
-					memcpy(keys->key, ret_buf, strlen(ret_buf));
-				}else if (i == 1) {
+					memcpy(keys->key, ret_buf, strlen(ret_buf)); }else if (i == 1) {
 					delete_line_break_indicator(ret_buf);
 					memcpy(keys->value, ret_buf, strlen(ret_buf));
 				}
@@ -133,7 +132,7 @@ int read_file_content(const char *file, sections_t *section_head)
 			if (i == 0) {
 				free(keys);
 			}else 
-				stlc_list_add_tail(&keys->node, &section_node->keys->node);
+				list_add_tail(&keys->node, &section_node->keys->node);
 		}
 
 		memset(contents, 0, LINE_LEN);
@@ -161,13 +160,13 @@ int find_key_under_section(char *section_name , char *key,
 	/** @brief group_id is begin at "3", because 
 		(black_name is 0, white_name is 1, search_keyword is 2) */
 	int num = BASE_URL_FIRST_GROUP;
-	struct stlc_list_head *pos = NULL, *pos_child = NULL;
+	struct list_head *pos = NULL, *pos_child = NULL;
 	sections_t * tmp_node = NULL;
 	keys_t *tmp_key = NULL;
-	stlc_list_for_each(pos, &section_head->node) {
+	list_for_each(pos, &section_head->node) {
 		tmp_node = (sections_t *)container_of(pos, sections_t, node);
 		if (STRING_COMPARE(section_name, ==, tmp_node->section)) {
-			stlc_list_for_each(pos_child, &tmp_node->keys->node) {
+			list_for_each(pos_child, &tmp_node->keys->node) {
 				tmp_key = (keys_t *)container_of(pos_child, 
 													keys_t, node);
 				if (STRING_COMPARE(key, ==, tmp_key->key)) {
@@ -194,13 +193,13 @@ int get_value_by_key(char *section_name, char *key, sections_t * section_head)
 	assert(key != NULL);
 	assert(section_head != NULL);
 	
-	struct stlc_list_head *pos = NULL, *pos_child = NULL;
+	struct list_head *pos = NULL, *pos_child = NULL;
 	sections_t * tmp_node = NULL;
 	keys_t *tmp_key = NULL;
-	stlc_list_for_each(pos, &section_head->node) {
+	list_for_each(pos, &section_head->node) {
 		tmp_node = (sections_t *)container_of(pos, sections_t, node);
 		if (STRING_COMPARE(section_name, ==, tmp_node->section)) {
-			stlc_list_for_each(pos_child, &tmp_node->keys->node) {
+			list_for_each(pos_child, &tmp_node->keys->node) {
 				tmp_key = (keys_t *)container_of(pos_child, 
 													keys_t, node);
 				if (STRING_COMPARE(key, ==, tmp_key->key)) {
@@ -223,18 +222,18 @@ int travel_keys_under_section(char *section_name, sections_t *section_head)
 	assert(section_name != NULL);
 	assert(section_head != NULL);
 	
-	struct stlc_list_head *pos = NULL, *pos_child = NULL;
+	struct list_head *pos = NULL, *pos_child = NULL;
 	sections_t * tmp_node = NULL;
 	keys_t *tmp_key = NULL;
-	stlc_list_for_each(pos, &section_head->node) {
+	list_for_each(pos, &section_head->node) {
 		tmp_node = (sections_t *)container_of(pos, sections_t, node);
 		if (STRING_COMPARE(section_name, ==, tmp_node->section)) {
-		//	printf("The section is:[%s] and the keys are:\n", 
-		//		tmp_node->section);
-			stlc_list_for_each(pos_child, &tmp_node->keys->node) {
+			printf("The section is:[%s] and the keys are:\n", 
+				tmp_node->section);
+			list_for_each(pos_child, &tmp_node->keys->node) {
 				tmp_key = (keys_t *)container_of(pos_child, 
 													keys_t, node);
-		//		printf("%s\n", tmp_key->key);
+				printf("%s\n", tmp_key->key);
 			}
 		}
 	}
@@ -251,7 +250,7 @@ int read_ini_file(char * filename, sections_t *section_head)
 {
 	char buffer[VALUE_LEN] = {0}, *file_contents = NULL;
 	/** @brief init the head of list */
-	STLC_INIT_LIST_HEAD(&section_head->node);
+    INIT_LIST_HEAD(&section_head->node);
 
 
 	/** @brief parse the whole .ini file and 

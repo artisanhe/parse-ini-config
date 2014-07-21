@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/types.h>
-#include "stlc_list.h"
+#include "list.h"
 
 #define LEFT_BRACE '['
 #define RIGHT_BRACE ']'
@@ -23,14 +23,14 @@
 #define VALUE_LEN 256
 
 typedef struct keys {
-	struct stlc_list_head node;
+	struct list_head node;
 	char value[VALUE_LEN];
 	char key[VALUE_LEN];
 	int id;
 }keys_t;
 
 typedef struct sections{
-	struct stlc_list_head node;
+	struct list_head node;
 	char section[VALUE_LEN];
 	keys_t *keys;
 }sections_t;
@@ -62,10 +62,7 @@ int read_ini_string(const char *section, const char *key,char *value,
 int load_file_content(const char *, char **);
 int read_ini_file(char *, sections_t *);
 
-#define CONFIG_FILE "../category.ini"
-#define DIRECTORY "../category/"
-#define PHASH_FILE "../phash.txt"
-#define GROUP_FILE "../group.txt"
+#define CONFIG_FILE "./config.ini"
 
 #endif //end of INI_FILE_H_
 
