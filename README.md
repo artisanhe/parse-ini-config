@@ -1,4 +1,4 @@
-vicky-parseconfig
+parse-ini-config
 =================
 
 This project parsed the *.ini files writed by c language. 
